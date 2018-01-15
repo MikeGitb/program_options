@@ -42,7 +42,7 @@ void test_winmain()
     char* BOOST_PP_CAT(e, __LINE__)[] = expected;\
     vector<string> BOOST_PP_CAT(v, __LINE__) = split_winmain(input);\
     check_equal(BOOST_PP_CAT(v, __LINE__), BOOST_PP_CAT(e, __LINE__),\
-                sizeof(BOOST_PP_CAT(e, __LINE__))/sizeof(char*));    
+                sizeof(BOOST_PP_CAT(e, __LINE__))/sizeof(char*));
 
 // The following expectations were obtained in Win2000 shell:
     TEST("1 ", {"1"});
@@ -58,7 +58,7 @@ void test_winmain()
     TEST("1\" 1 ", {"1 1 "});
     TEST("1\\\" 1 ", {"1\"" C "1"});
     TEST("1\\1 ", {"1\\1"});
-    TEST("1\\\\1 ", {"1\\\\1"});    
+    TEST("1\\\\1 ", {"1\\\\1"});
 }
 
 int main(int, char*[])

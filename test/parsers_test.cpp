@@ -104,7 +104,7 @@ void test_command_line()
     BOOST_CHECK(a2.arguments().size() == 1);
     BOOST_CHECK(a2.arguments()[0] == "file");
     #endif
-    
+
     options_description desc;
     desc.add_options()
         ("foo,f", new untyped_value(), "")
@@ -117,9 +117,9 @@ void test_command_line()
                           "--plug3=10"};
     vector<string> cmdline3 = sv(cmdline3_,
                                  sizeof(cmdline3_)/sizeof(const char*));
-    vector<option> a3 = 
+    vector<option> a3 =
         command_line_parser(cmdline3).options(desc).run().options;
-                       
+
     BOOST_CHECK_EQUAL(a3.size(), 5u);
 
     check_value(a3[0], "foo", "12");
@@ -128,10 +128,10 @@ void test_command_line()
     check_value(a3[3], "bar", "4");
     check_value(a3[4], "plug3", "10");
 
-    // Regression test: check that '0' as style is interpreted as 
+    // Regression test: check that '0' as style is interpreted as
     // 'default_style'
-    vector<option> a4 = 
-        parse_command_line(sizeof(cmdline3_)/sizeof(const char*), cmdline3_, 
+    vector<option> a4 =
+        parse_command_line(sizeof(cmdline3_)/sizeof(const char*), cmdline3_,
                                                                desc, 0, additional_parser).options;
 
     BOOST_CHECK_EQUAL(a4.size(), 4u);
@@ -154,8 +154,8 @@ void test_command_line()
         (",o", po::value<string>()->multitoken())
         (",x", po::value<string>())
         ;
-    vector<option> a5 = 
-        parse_command_line(sizeof(cmdline5)/sizeof(const char*), const_cast<char**>(cmdline5), 
+    vector<option> a5 =
+        parse_command_line(sizeof(cmdline5)/sizeof(const char*), const_cast<char**>(cmdline5),
                                                                      desc3, 0, additional_parser).options;
     BOOST_CHECK_EQUAL(a5.size(), 3u);
     check_value(a5[0], "-p", "7");
@@ -164,7 +164,7 @@ void test_command_line()
     BOOST_CHECK_EQUAL(a5[1].value[0], "1");
     BOOST_CHECK_EQUAL(a5[1].value[1], "2");
     BOOST_CHECK_EQUAL(a5[1].value[2], "3");
-    check_value(a5[2], "-x", "8");   
+    check_value(a5[2], "-x", "8");
 
 
     po::options_description desc4( "" );
@@ -183,7 +183,7 @@ void test_command_line()
     p.add( "file", 1 );
 
     const char* cmdline6[] = {"", "-m", "token1", "token2", "--", "some_file"};
-    vector<option> a6 = 
+    vector<option> a6 =
         command_line_parser(sizeof(cmdline6)/sizeof(const char*), const_cast<char**>(cmdline6)).options(desc4).positional(p)
         .run().options;
     BOOST_CHECK_EQUAL(a6.size(), 2u);
@@ -217,7 +217,7 @@ void test_config_file(const char* config_file)
     "[m1]\n"
     "v1 = 1\n"
     "\n"
-    "v2 = 2\n"    
+    "v2 = 2\n"
     ;
 
     stringstream ss(content1);
@@ -229,8 +229,8 @@ void test_config_file(const char* config_file)
     check_value(a1[3], "b", "true");
     check_value(a1[4], "m1.v1", "1");
     check_value(a1[5], "m1.v2", "2");
-    
-    // same test, but now options come from file 
+
+    // same test, but now options come from file
     vector<option> a2 = parse_config_file<char>(config_file, desc).options;
     BOOST_REQUIRE(a2.size() == 6);
     check_value(a2[0], "gv1", "0");
@@ -272,7 +272,7 @@ void test_unregistered()
     const char* cmdline1_[] = { "--foo=12", "--bar", "1"};
     vector<string> cmdline1 = sv(cmdline1_,
                                  sizeof(cmdline1_)/sizeof(const char*));
-    vector<option> a1 = 
+    vector<option> a1 =
         command_line_parser(cmdline1).options(desc).allow_unregistered().run()
         .options;
 
@@ -285,7 +285,7 @@ void test_unregistered()
     BOOST_CHECK(a1[1].unregistered == true);
     BOOST_CHECK(a1[2].string_key == "");
     BOOST_CHECK(a1[2].unregistered == false);
-    
+
 
     vector<string> a2 = collect_unrecognized(a1, include_positional);
     BOOST_CHECK(a2[0] == "--foo=12");
@@ -294,12 +294,12 @@ void test_unregistered()
 
     // Test that storing unregisted options has no effect
     variables_map vm;
-    
+
     store(command_line_parser(cmdline1).options(desc).
           allow_unregistered().run(),
           vm);
 
-    BOOST_CHECK_EQUAL(vm.size(), 0u);   
+    BOOST_CHECK_EQUAL(vm.size(), 0u);
 
 
     const char content1[] =
