@@ -24,9 +24,6 @@
 #include <istream> // std::getline
 #endif
 
-#include <boost/static_assert.hpp>
-#include <boost/type_traits/is_same.hpp>
-
 #ifdef BOOST_MSVC
 # pragma warning(push)
 # pragma warning(disable: 4251) // class XYZ needs to have dll-interface to be used by clients of class XYZ
