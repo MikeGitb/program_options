@@ -104,7 +104,7 @@ namespace boost { namespace program_options {
 
 
         // Second, apply default values and store required options.
-        const vector<shared_ptr<option_description> >& all = desc.options();
+        const vector<std::shared_ptr<option_description> >& all = desc.options();
         for(i = 0; i < all.size(); ++i)
         {
             const option_description& d = *all[i];

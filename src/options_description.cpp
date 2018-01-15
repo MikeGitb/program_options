@@ -230,8 +230,8 @@ namespace boost { namespace program_options {
         // Create untypes semantic which accepts zero tokens: i.e.
         // no value can be specified on command line.
         // FIXME: does not look exception-safe
-        shared_ptr<option_description> d(
-            new option_description(name, new untyped_value(true), description));
+        auto d = std::make_shared<option_description>(
+                    name, new untyped_value(true), description);
 
         owner->add(d);
         return *this;
@@ -242,7 +242,7 @@ namespace boost { namespace program_options {
     operator()(const char* name,
                const value_semantic* s)
     {
-        shared_ptr<option_description> d(new option_description(name, s));
+        auto d = std::make_shared<option_description>(name, s);
         owner->add(d);
         return *this;
     }
@@ -253,7 +253,7 @@ namespace boost { namespace program_options {
                const value_semantic* s,
                const char* description)
     {
-        shared_ptr<option_description> d(new option_description(name, s, description));
+        auto d = std::make_shared<option_description>(name, s, description);
 
         owner->add(d);
         return *this;
@@ -282,7 +282,7 @@ namespace boost { namespace program_options {
     }
 
     void
-    options_description::add(shared_ptr<option_description> desc)
+    options_description::add(std::shared_ptr<option_description> desc)
     {
         m_options.push_back(desc);
         belong_to_group.push_back(false);
@@ -291,7 +291,7 @@ namespace boost { namespace program_options {
     options_description&
     options_description::add(const options_description& desc)
     {
-        shared_ptr<options_description> d(new options_description(desc));
+        std::shared_ptr<options_description> d(new options_description(desc));
         groups.push_back(d);
 
         for (size_t i = 0; i < desc.m_options.size(); ++i) {
@@ -321,7 +321,7 @@ namespace boost { namespace program_options {
         return *d;
     }
 
-    const std::vector< shared_ptr<option_description> >& 
+    const std::vector< std::shared_ptr<option_description> >&
     options_description::options() const
     {
         return m_options;
@@ -333,7 +333,7 @@ namespace boost { namespace program_options {
                                       bool long_ignore_case,
                                       bool short_ignore_case) const
     {
-        shared_ptr<option_description> found;
+        std::shared_ptr<option_description> found;
         bool had_full_match = false;
         vector<string> approximate_matches;
         vector<string> full_matches;

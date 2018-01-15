@@ -10,6 +10,7 @@
 #include <iosfwd>
 #include <string>
 #include <set>
+#include <memory>
 
 #include <boost/noncopyable.hpp>
 #include <boost/program_options/config.hpp>
@@ -25,7 +26,6 @@
 
 #include <boost/static_assert.hpp>
 #include <boost/type_traits/is_same.hpp>
-#include <boost/shared_ptr.hpp>
 
 #ifdef BOOST_MSVC
 # pragma warning(push)
@@ -134,7 +134,7 @@ namespace boost { namespace program_options { namespace detail {
         bool getline(std::string&);
 
     private: // internal data
-        shared_ptr<std::basic_istream<charT> > is;
+        std::shared_ptr<std::basic_istream<charT> > is;
     };
 
     typedef basic_config_file_iterator<char> config_file_iterator;

@@ -13,7 +13,6 @@
 #include <boost/program_options/value_semantic.hpp>
 
 #include <boost/function.hpp>
-#include <boost/shared_ptr.hpp>
 #include <boost/detail/workaround.hpp>
 #include <boost/any.hpp>
 
@@ -21,6 +20,7 @@
 #include <vector>
 #include <set>
 #include <map>
+#include <memory>
 #include <stdexcept>
 
 #include <iosfwd>
@@ -118,9 +118,9 @@ namespace program_options {
         const std::string& description() const;
 
         /// Semantic of option's value
-        shared_ptr<const value_semantic> semantic() const;
-        
-        /// Returns the option name, formatted suitably for usage message. 
+        std::shared_ptr<const value_semantic> semantic() const;
+
+        /// Returns the option name, formatted suitably for usage message.
         std::string format_name() const;
 
         /** Returns the parameter name and properties, formatted suitably for
@@ -134,7 +134,7 @@ namespace program_options {
         std::string m_short_name, m_long_name, m_description;
         // shared_ptr is needed to simplify memory management in
         // copy ctor and destructor.
-        shared_ptr<const value_semantic> m_value_semantic;
+        std::shared_ptr<const value_semantic> m_value_semantic;
     };
 
     class options_description;
@@ -190,7 +190,7 @@ namespace program_options {
         /** Adds new variable description. Throws duplicate_variable_error if
             either short or long name matches that of already present one.
         */
-        void add(shared_ptr<option_description> desc);
+        void add(std::shared_ptr<option_description> desc);
         /** Adds a group of option description. This has the same
             effect as adding all option_descriptions in 'desc'
             individually, except that output operator will show
@@ -223,7 +223,7 @@ namespace program_options {
                                                bool short_ignore_case = false) const;
 
 
-        const std::vector< shared_ptr<option_description> >& options() const;
+        const std::vector< std::shared_ptr<option_description> >& options() const;
 
         /** Produces a human readable output of 'desc', listing options,
             their descriptions and allowed parameters. Other options_description
@@ -250,11 +250,11 @@ namespace program_options {
         std::string m_caption;
         const unsigned m_line_length;
         const unsigned m_min_description_length;
-        
+
         // Data organization is chosen because:
         // - there could be two names for one option
         // - option_add_proxy needs to know the last added option
-        std::vector< shared_ptr<option_description> > m_options;
+        std::vector< std::shared_ptr<option_description> > m_options;
 
         // Whether the option comes from one of declared groups.
 #if BOOST_WORKAROUND(BOOST_DINKUMWARE_STDLIB, BOOST_TESTED_AT(313))
@@ -265,7 +265,7 @@ namespace program_options {
         std::vector<bool> belong_to_group;
 #endif
 
-        std::vector< shared_ptr<options_description> > groups;
+        std::vector< std::shared_ptr<options_description> > groups;
 
     };
 

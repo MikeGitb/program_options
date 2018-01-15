@@ -104,7 +104,7 @@ namespace boost { namespace program_options {
     {
         set<string> allowed_options;
 
-        const vector<shared_ptr<option_description> >& options = desc.options();
+        const vector<std::shared_ptr<option_description> >& options = desc.options();
         for (unsigned i = 0; i < options.size(); ++i)
         {
             const option_description& d = *options[i];
