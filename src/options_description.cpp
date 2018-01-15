@@ -37,7 +37,7 @@ namespace boost { namespace program_options {
            for (typename std::basic_string< charT >::size_type i = 0; i < str.size(); ++i)
            {
                result.append(1, static_cast< charT >(std::tolower(str[i])));
-           }   
+           }
            return result;
        }
 
@@ -47,7 +47,7 @@ namespace boost { namespace program_options {
     option_description::option_description()
     {
     }
-    
+
     option_description::
     option_description(const char* name,
                        const value_semantic* s)
@@ -55,7 +55,7 @@ namespace boost { namespace program_options {
     {
         this->set_name(name);
     }
-                                           
+
 
     option_description::
     option_description(const char* name,
@@ -71,17 +71,17 @@ namespace boost { namespace program_options {
     }
 
     option_description::match_result
-    option_description::match(const std::string& option, 
-                              bool approx, 
+    option_description::match(const std::string& option,
+                              bool approx,
                               bool long_ignore_case,
                               bool short_ignore_case) const
     {
-        match_result result = no_match;        
-        
+        match_result result = no_match;
+
         std::string local_long_name((long_ignore_case ? tolower_(m_long_name) : m_long_name));
-        
+
         if (!local_long_name.empty()) {
-        
+
             std::string local_option = (long_ignore_case ? tolower_(option) : option);
 
             if (*local_long_name.rbegin() == '*')
@@ -105,7 +105,7 @@ namespace boost { namespace program_options {
                 }
             }
         }
-         
+
         if (result != full_match)
         {
             std::string local_option(short_ignore_case ? tolower_(option) : option);
@@ -117,13 +117,13 @@ namespace boost { namespace program_options {
             }
         }
 
-        return result;        
+        return result;
     }
 
-    const std::string& 
+    const std::string&
     option_description::key(const std::string& option) const
-    {        
-        if (!m_long_name.empty()) 
+    {
+        if (!m_long_name.empty())
             if (m_long_name.find('*') != string::npos)
                 // The '*' character means we're long_name
                 // matches only part of the input. So, returning
@@ -137,10 +137,10 @@ namespace boost { namespace program_options {
             return m_short_name;
     }
 
-    std::string 
+    std::string
     option_description::canonical_display_name(int prefix_style) const
     {
-        if (!m_long_name.empty()) 
+        if (!m_long_name.empty())
         {
             if (prefix_style == command_line_style::allow_long)
                 return "--" + m_long_name;
@@ -155,7 +155,7 @@ namespace boost { namespace program_options {
             if (prefix_style == command_line_style::allow_dash_for_short)
                 return string("-") + m_short_name[1];
         }
-        if (!m_long_name.empty()) 
+        if (!m_long_name.empty())
             return m_long_name;
         else
             return m_short_name;
@@ -189,26 +189,26 @@ namespace boost { namespace program_options {
         return m_description;
     }
 
-    shared_ptr<const value_semantic>
+    std::shared_ptr<const value_semantic>
     option_description::semantic() const
     {
         return m_value_semantic;
     }
-    
-    std::string 
+
+    std::string
     option_description::format_name() const
     {
         if (!m_short_name.empty())
         {
-            return m_long_name.empty() 
-                ? m_short_name 
+            return m_long_name.empty()
+                ? m_short_name
                 : string(m_short_name).append(" [ --").
                   append(m_long_name).append(" ]");
         }
         return string("--").append(m_long_name);
     }
 
-    std::string 
+    std::string
     option_description::format_parameter() const
     {
         if (m_value_semantic->max_tokens() != 0)
@@ -227,7 +227,7 @@ namespace boost { namespace program_options {
     operator()(const char* name,
                const char* description)
     {
-        // Create untypes semantic which accepts zero tokens: i.e. 
+        // Create untypes semantic which accepts zero tokens: i.e.
         // no value can be specified on command line.
         // FIXME: does not look exception-safe
         shared_ptr<option_description> d(
@@ -267,7 +267,7 @@ namespace boost { namespace program_options {
     , m_min_description_length(min_description_length)
     {
         // we require a space between the option and description parts, so add 1.
-        assert(m_min_description_length < m_line_length - 1);    
+        assert(m_min_description_length < m_line_length - 1);
     }
 
     options_description::options_description(const std::string& caption,
@@ -280,7 +280,7 @@ namespace boost { namespace program_options {
         // we require a space between the option and description parts, so add 1.
         assert(m_min_description_length < m_line_length - 1);
     }
-    
+
     void
     options_description::add(shared_ptr<option_description> desc)
     {
@@ -304,17 +304,17 @@ namespace boost { namespace program_options {
 
     options_description_easy_init
     options_description::add_options()
-    {       
+    {
         return options_description_easy_init(this);
     }
 
     const option_description&
-    options_description::find(const std::string& name, 
+    options_description::find(const std::string& name,
                               bool approx,
                               bool long_ignore_case,
                               bool short_ignore_case) const
     {
-        const option_description* d = find_nothrow(name, approx, 
+        const option_description* d = find_nothrow(name, approx,
                                        long_ignore_case, short_ignore_case);
         if (!d)
             boost::throw_exception(unknown_option());
@@ -328,7 +328,7 @@ namespace boost { namespace program_options {
     }
 
     const option_description*
-    options_description::find_nothrow(const std::string& name, 
+    options_description::find_nothrow(const std::string& name,
                                       bool approx,
                                       bool long_ignore_case,
                                       bool short_ignore_case) const
@@ -337,26 +337,26 @@ namespace boost { namespace program_options {
         bool had_full_match = false;
         vector<string> approximate_matches;
         vector<string> full_matches;
-        
+
         // We use linear search because matching specified option
         // name with the declared option name need to take care about
         // case sensitivity and trailing '*' and so we can't use simple map.
         for(unsigned i = 0; i < m_options.size(); ++i)
         {
-            option_description::match_result r = 
+            option_description::match_result r =
                 m_options[i]->match(name, approx, long_ignore_case, short_ignore_case);
 
             if (r == option_description::no_match)
                 continue;
 
             if (r == option_description::full_match)
-            {                
+            {
                 full_matches.push_back(m_options[i]->key(name));
                 found = m_options[i];
                 had_full_match = true;
-            } 
-            else 
-            {                        
+            }
+            else
+            {
                 // FIXME: the use of 'key' here might not
                 // be the best approach.
                 approximate_matches.push_back(m_options[i]->key(name));
@@ -364,9 +364,9 @@ namespace boost { namespace program_options {
                     found = m_options[i];
             }
         }
-        if (full_matches.size() > 1) 
+        if (full_matches.size() > 1)
             boost::throw_exception(ambiguous_option(full_matches));
-        
+
         // If we have a full match, and an approximate match,
         // ignore approximate match instead of reporting error.
         // Say, if we have options "all" and "all-chroots", then
@@ -391,16 +391,16 @@ namespace boost { namespace program_options {
            outputs it to 'os' with wordwrapping, that is, as several
            line.
 
-           Each output line starts with 'indent' space characters, 
+           Each output line starts with 'indent' space characters,
            following by characters from 'par'. The total length of
            line is no longer than 'line_length'.
-                                      
+
         */
         void format_paragraph(std::ostream& os,
                               std::string par,
                               unsigned indent,
                               unsigned line_length)
-        {                    
+        {
             // Through reminder of this function, 'line_length' will
             // be the length available for characters, not including
             // indent.
@@ -424,11 +424,11 @@ namespace boost { namespace program_options {
                     boost::throw_exception(program_options::error(
                         "Only one tab per paragraph is allowed in the options description"));
                 }
-          
+
                 // erase tab from string
                 par.erase(par_indent, 1);
 
-                // this assert may fail due to user error or 
+                // this assert may fail due to user error or
                 // environment conditions!
                 assert(par_indent < line_length);
 
@@ -436,9 +436,9 @@ namespace boost { namespace program_options {
                 if (par_indent >= line_length)
                 {
                     par_indent = 0;
-                }            
+                }
             }
-          
+
             if (par.size() < line_length)
             {
                 os << par;
@@ -448,8 +448,8 @@ namespace boost { namespace program_options {
                 string::const_iterator       line_begin = par.begin();
                 const string::const_iterator par_end = par.end();
 
-                bool first_line = true; // of current paragraph!        
-            
+                bool first_line = true; // of current paragraph!
+
                 while (line_begin < par_end)  // paragraph lines
                 {
                     if (!first_line)
@@ -470,9 +470,9 @@ namespace boost { namespace program_options {
                     // the end, since MSVC 8.0 (brokenly), assumes that
                     // doing that, even if no access happens, is a bug.
                     unsigned remaining = static_cast<unsigned>(std::distance(line_begin, par_end));
-                    string::const_iterator line_end = line_begin + 
+                    string::const_iterator line_end = line_begin +
                         ((remaining < line_length) ? remaining : line_length);
-            
+
                     // prevent chopped words
                     // Is line_end between two non-space characters?
                     if ((*(line_end - 1) != ' ') &&
@@ -484,22 +484,22 @@ namespace boost { namespace program_options {
                                  reverse_iterator<string::const_iterator>(line_begin),
                                  ' ')
                             .base();
-                
+
                         if (last_space != line_begin)
-                        {                 
-                            // is last_space within the second half ot the 
+                        {
+                            // is last_space within the second half ot the
                             // current line
-                            if (static_cast<unsigned>(std::distance(last_space, line_end)) < 
+                            if (static_cast<unsigned>(std::distance(last_space, line_end)) <
                                 (line_length / 2))
                             {
                                 line_end = last_space;
                             }
-                        }                                                
+                        }
                     } // prevent chopped words
-             
+
                     // write line to stream
                     copy(line_begin, line_end, ostream_iterator<char>(os));
-              
+
                     if (first_line)
                     {
                         indent += static_cast<unsigned>(par_indent);
@@ -511,21 +511,21 @@ namespace boost { namespace program_options {
                     if (line_end != par_end)
                     {
                         os << '\n';
-                
+
                         for(unsigned pad = indent; pad > 0; --pad)
                         {
                             os.put(' ');
-                        }                                                        
+                        }
                     }
-              
+
                     // next line starts after of this line
-                    line_begin = line_end;              
+                    line_begin = line_end;
                 } // paragraph lines
-            }          
-        }                              
-        
+            }
+        }
+
         void format_description(std::ostream& os,
-                                const std::string& desc, 
+                                const std::string& desc,
                                 unsigned first_column_width,
                                 unsigned line_length)
         {
@@ -545,40 +545,40 @@ namespace boost { namespace program_options {
             // will consider uses of 'tokenizer' below as uses of
             // boost::tokenizer, not typedef.
             typedef boost::tokenizer<boost::char_separator<char> > tok;
-          
+
             tok paragraphs(
                 desc,
                 char_separator<char>("\n", "", boost::keep_empty_tokens));
-          
-            tok::const_iterator       par_iter = paragraphs.begin();                
+
+            tok::const_iterator       par_iter = paragraphs.begin();
             const tok::const_iterator par_end = paragraphs.end();
 
             while (par_iter != par_end)  // paragraphs
             {
-                format_paragraph(os, *par_iter, first_column_width, 
+                format_paragraph(os, *par_iter, first_column_width,
                                  line_length);
-            
+
                 ++par_iter;
-            
+
                 // prepair next line if any
                 if (par_iter != par_end)
                 {
                     os << '\n';
-              
+
                     for(unsigned pad = first_column_width; pad > 0; --pad)
                     {
                         os.put(' ');
-                    }                    
-                }            
+                    }
+                }
             }  // paragraphs
         }
-    
-        void format_one(std::ostream& os, const option_description& opt, 
+
+        void format_one(std::ostream& os, const option_description& opt,
                         unsigned first_column_width, unsigned line_length)
         {
             stringstream ss;
             ss << "  " << opt.format_name() << ' ' << opt.format_parameter();
-            
+
             // Don't use ss.rdbuf() since g++ 2.96 is buggy on it.
             os << ss.str();
 
@@ -597,15 +597,15 @@ namespace boost { namespace program_options {
                       os.put(' ');
                    }
                 }
-            
+
                 format_description(os, opt.description(),
                                    first_column_width, line_length);
             }
         }
     }
 
-    unsigned                                                                    
-    options_description::get_option_column_width() const                                
+    unsigned
+    options_description::get_option_column_width() const
     {
         /* Find the maximum width of the option column */
         unsigned width(23);
@@ -615,11 +615,11 @@ namespace boost { namespace program_options {
             const option_description& opt = *m_options[i];
             stringstream ss;
             ss << "  " << opt.format_name() << ' ' << opt.format_parameter();
-            width = (max)(width, static_cast<unsigned>(ss.str().size()));            
+            width = (max)(width, static_cast<unsigned>(ss.str().size()));
         }
 
         /* Get width of groups as well*/
-        for (unsigned j = 0; j < groups.size(); ++j)                            
+        for (unsigned j = 0; j < groups.size(); ++j)
             width = max(width, groups[j]->get_option_column_width());
 
         /* this is the column were description should start, if first
@@ -627,13 +627,13 @@ namespace boost { namespace program_options {
         const unsigned start_of_description_column = m_line_length - m_min_description_length;
 
         width = (min)(width, start_of_description_column-1);
-        
+
         /* add an additional space to improve readability */
         ++width;
-        return width;                                                       
+        return width;
     }
 
-    void 
+    void
     options_description::print(std::ostream& os, unsigned width) const
     {
         if (!m_caption.empty())
@@ -655,7 +655,7 @@ namespace boost { namespace program_options {
             os << "\n";
         }
 
-        for (unsigned j = 0; j < groups.size(); ++j) {            
+        for (unsigned j = 0; j < groups.size(); ++j) {
             os << "\n";
             groups[j]->print(os, width);
         }
