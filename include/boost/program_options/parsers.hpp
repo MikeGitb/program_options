@@ -11,9 +11,8 @@
 #include <boost/program_options/option.hpp>
 #include <boost/program_options/detail/cmdline.hpp>
 
-#include <boost/function/function1.hpp>
-
 #include <iosfwd>
+#include <functional>
 #include <vector>
 #include <utility>
 
@@ -95,7 +94,7 @@ namespace boost { namespace program_options {
         'parsed_options' */
 
 
-    typedef function1<std::pair<std::string, std::string>, const std::string&> ext_parser;
+    typedef std::function<std::pair<std::string, std::string>(const std::string&)> ext_parser;
 
     /** Command line parser.
 
@@ -169,8 +168,8 @@ namespace boost { namespace program_options {
     parse_command_line(int argc, const charT* const argv[],
                        const options_description&,
                        int style = 0,
-                       function1<std::pair<std::string, std::string>,
-                                 const std::string&> ext
+                       std::function<std::pair<std::string, std::string>
+                                 (const std::string&)> ext
                        = ext_parser());
 
     /** Parse a config file.
@@ -225,7 +224,7 @@ namespace boost { namespace program_options {
     */
     BOOST_PROGRAM_OPTIONS_DECL parsed_options
     parse_environment(const options_description&,
-                      const function1<std::string, std::string>& name_mapper);
+                      const std::function<std::string (std::string)>& name_mapper);
 
     /** Parse environment.
 
@@ -235,14 +234,6 @@ namespace boost { namespace program_options {
     */
     BOOST_PROGRAM_OPTIONS_DECL parsed_options
     parse_environment(const options_description&, const std::string& prefix);
-
-    /** @overload
-        This function exists to resolve ambiguity between the two above
-        functions when second argument is of 'char*' type. There's implicit
-        conversion to both function1 and string.
-    */
-    BOOST_PROGRAM_OPTIONS_DECL parsed_options
-    parse_environment(const options_description&, const char* prefix);
 
     /** Splits a given string to a collection of single strings which
         can be passed to command_line_parser. The second parameter is

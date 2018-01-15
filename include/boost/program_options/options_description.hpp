@@ -12,7 +12,6 @@
 #include <boost/program_options/errors.hpp>
 #include <boost/program_options/value_semantic.hpp>
 
-#include <boost/function.hpp>
 #include <boost/detail/workaround.hpp>
 #include <boost/any.hpp>
 

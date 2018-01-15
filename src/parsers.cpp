@@ -187,7 +187,7 @@ namespace boost { namespace program_options {
 
     BOOST_PROGRAM_OPTIONS_DECL parsed_options
     parse_environment(const options_description& desc,
-                      const function1<std::string, std::string>& name_mapper)
+                      const std::function<std::string (std::string)>& name_mapper)
     {
         parsed_options result(&desc);
 

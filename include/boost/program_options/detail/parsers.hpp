@@ -103,8 +103,8 @@ namespace boost { namespace program_options {
     parse_command_line(int argc, const charT* const argv[],
                        const options_description& desc,
                        int style,
-                       function1<std::pair<std::string, std::string>, 
-                                 const std::string&> ext)
+                       std::function<std::pair<std::string, std::string>
+                                 (const std::string&)> ext)
     {
         return basic_command_line_parser<charT>(argc, argv).options(desc).
             style(style).extra_parser(ext).run();
