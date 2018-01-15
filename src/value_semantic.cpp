@@ -34,7 +34,7 @@ namespace boost { namespace program_options {
 
     void
     value_semantic_codecvt_helper<char>::
-    parse(boost::any& value_store,
+    parse(std::any& value_store,
           const std::vector<std::string>& new_tokens,
           bool utf8) const
     {
@@ -60,7 +60,7 @@ namespace boost { namespace program_options {
 #ifndef BOOST_NO_STD_WSTRING
     void
     value_semantic_codecvt_helper<wchar_t>::
-    parse(boost::any& value_store,
+    parse(std::any& value_store,
           const std::vector<std::string>& new_tokens,
           bool utf8) const
     {
@@ -110,10 +110,10 @@ namespace boost { namespace program_options {
 
 
     void
-    untyped_value::xparse(boost::any& value_store,
+    untyped_value::xparse(std::any& value_store,
                           const std::vector<std::string>& new_tokens) const
     {
-        if (!value_store.empty())
+        if (value_store.has_value())
             boost::throw_exception(
                 multiple_occurrences());
         if (new_tokens.size() > 1)
@@ -143,7 +143,7 @@ namespace boost { namespace program_options {
         Case is ignored. The 'xs' vector can either be empty, in which
         case the value is 'true', or can contain explicit value.
     */
-    BOOST_PROGRAM_OPTIONS_DECL void validate(any& v, const vector<string>& xs,
+    BOOST_PROGRAM_OPTIONS_DECL void validate(std::any& v, const vector<string>& xs,
                        bool*, int)
     {
         check_first_occurrence(v);
@@ -153,9 +153,9 @@ namespace boost { namespace program_options {
             s[i] = char(tolower(s[i]));
 
         if (s.empty() || s == "on" || s == "yes" || s == "1" || s == "true")
-            v = any(true);
+            v = std::any(true);
         else if (s == "off" || s == "no" || s == "0" || s == "false")
-            v = any(false);
+            v = std::any(false);
         else
             boost::throw_exception(invalid_bool_value(s));
     }
@@ -166,7 +166,7 @@ namespace boost { namespace program_options {
     // needed string type, and that's more work.
 #if !defined(BOOST_NO_STD_WSTRING)
     BOOST_PROGRAM_OPTIONS_DECL
-    void validate(any& v, const vector<wstring>& xs, bool*, int)
+    void validate(std::any& v, const vector<wstring>& xs, bool*, int)
     {
         check_first_occurrence(v);
         wstring s(get_single_string(xs, true));
@@ -175,35 +175,35 @@ namespace boost { namespace program_options {
             s[i] = wchar_t(tolower(s[i]));
 
         if (s.empty() || s == L"on" || s == L"yes" || s == L"1" || s == L"true")
-            v = any(true);
+            v = std::any(true);
         else if (s == L"off" || s == L"no" || s == L"0" || s == L"false")
-            v = any(false);
+            v = std::any(false);
         else
             boost::throw_exception(invalid_bool_value(convert_value(s)));
     }
 #endif
     BOOST_PROGRAM_OPTIONS_DECL
-    void validate(any& v, const vector<string>& xs, std::string*, int)
+    void validate(std::any& v, const vector<string>& xs, std::string*, int)
     {
         check_first_occurrence(v);
-        v = any(get_single_string(xs));
+        v = std::any(get_single_string(xs));
     }
 
 #if !defined(BOOST_NO_STD_WSTRING)
     BOOST_PROGRAM_OPTIONS_DECL
-    void validate(any& v, const vector<wstring>& xs, std::string*, int)
+    void validate(std::any& v, const vector<wstring>& xs, std::string*, int)
     {
         check_first_occurrence(v);
-        v = any(get_single_string(xs));
+        v = std::any(get_single_string(xs));
     }
 #endif
 
     namespace validators {
 
         BOOST_PROGRAM_OPTIONS_DECL
-        void check_first_occurrence(const boost::any& value)
+        void check_first_occurrence(const std::any& value)
         {
-            if (!value.empty())
+            if (value.has_value())
                 boost::throw_exception(
                     multiple_occurrences());
         }

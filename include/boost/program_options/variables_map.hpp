@@ -9,8 +9,7 @@
 
 #include <boost/program_options/config.hpp>
 
-#include <boost/any.hpp>
-
+#include <any>
 #include <string>
 #include <memory>
 #include <map>
@@ -58,7 +57,7 @@ namespace boost { namespace program_options {
     class BOOST_PROGRAM_OPTIONS_DECL variable_value {
     public:
         variable_value() : m_defaulted(false) {}
-        variable_value(const boost::any& xv, bool xdefaulted)
+        variable_value(const std::any& xv, bool xdefaulted)
         : v(xv), m_defaulted(xdefaulted)
         {}
 
@@ -66,12 +65,12 @@ namespace boost { namespace program_options {
             throws boost::bad_any_cast exception. */
        template<class T>
        const T& as() const {
-           return boost::any_cast<const T&>(v);
+           return std::any_cast<const T&>(v);
        }
        /** @overload */
        template<class T>
        T& as() {
-           return boost::any_cast<T&>(v);
+           return std::any_cast<T&>(v);
        }
 
         /// Returns true if no value is stored.
@@ -80,12 +79,12 @@ namespace boost { namespace program_options {
             given, but has default value. */
         bool defaulted() const;
         /** Returns the contained value. */
-        const boost::any& value() const;
+        const std::any& value() const;
 
         /** Returns the contained value. */
-        boost::any& value();
+        std::any& value();
     private:
-        boost::any v;
+        std::any v;
         bool m_defaulted;
         // Internal reference to value semantic. We need to run
         // notifications when *final* values of options are known, and
@@ -188,7 +187,7 @@ namespace boost { namespace program_options {
     inline bool
     variable_value::empty() const
     {
-        return v.empty();
+        return !v.has_value();
     }
 
     inline bool
@@ -198,14 +197,14 @@ namespace boost { namespace program_options {
     }
 
     inline
-    const boost::any&
+    const std::any&
     variable_value::value() const
     {
         return v;
     }
 
     inline
-    boost::any&
+    std::any&
     variable_value::value()
     {
         return v;

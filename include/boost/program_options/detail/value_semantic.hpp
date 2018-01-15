@@ -20,13 +20,13 @@ namespace boost { namespace program_options {
     typed_value<T, charT>::name() const
     {
         std::string const& var = (m_value_name.empty() ? arg : m_value_name);
-        if (!m_implicit_value.empty() && !m_implicit_value_as_text.empty()) {
+        if (m_implicit_value.has_value() && !m_implicit_value_as_text.empty()) {
             std::string msg = "[=" + var + "(=" + m_implicit_value_as_text + ")]";
-            if (!m_default_value.empty() && !m_default_value_as_text.empty())
+            if (m_default_value.has_value() && !m_default_value_as_text.empty())
                 msg += " (=" + m_default_value_as_text + ")";
             return msg;
         }
-        else if (!m_default_value.empty() && !m_default_value_as_text.empty()) {
+        else if (m_default_value.has_value() && !m_default_value_as_text.empty()) {
             return var + " (=" + m_default_value_as_text + ")";
         } else {
             return var;
@@ -35,9 +35,9 @@ namespace boost { namespace program_options {
 
     template<class T, class charT>
     void
-    typed_value<T, charT>::notify(const boost::any& value_store) const
+    typed_value<T, charT>::notify(const std::any& value_store) const
     {
-        const T* value = boost::any_cast<T>(&value_store);
+        const T* value = std::any_cast<T>(&value_store);
         if (m_store_to) {
             *m_store_to = *value;
         }
@@ -69,7 +69,7 @@ namespace boost { namespace program_options {
 
         /* Throws multiple_occurrences if 'value' is not empty. */
         BOOST_PROGRAM_OPTIONS_DECL void
-        check_first_occurrence(const boost::any& value);
+        check_first_occurrence(const std::any& value);
     }
 
     using namespace validators;
@@ -82,27 +82,27 @@ namespace boost { namespace program_options {
         partial template ordering, just like the last 'long/int' parameter.
     */
     template<class T, class charT>
-    void validate(boost::any& v,
+    void validate(std::any& v,
                   const std::vector< std::basic_string<charT> >& xs,
                   T*, long)
     {
         validators::check_first_occurrence(v);
         std::basic_string<charT> s(validators::get_single_string(xs));
         try {
-            v = any(lexical_cast<T>(s));
+            v = std::any(lexical_cast<T>(s));
         }
         catch(const bad_lexical_cast&) {
             boost::throw_exception(invalid_option_value(s));
         }
     }
 
-    BOOST_PROGRAM_OPTIONS_DECL void validate(boost::any& v,
+    BOOST_PROGRAM_OPTIONS_DECL void validate(std::any& v,
                        const std::vector<std::string>& xs,
                        bool*,
                        int);
 
 #if !defined(BOOST_NO_STD_WSTRING)
-    BOOST_PROGRAM_OPTIONS_DECL void validate(boost::any& v,
+    BOOST_PROGRAM_OPTIONS_DECL void validate(std::any& v,
                        const std::vector<std::wstring>& xs,
                        bool*,
                        int);
@@ -111,13 +111,13 @@ namespace boost { namespace program_options {
     // cause msvc 7.1 to not generate code to specialization defined in
     // value_semantic.cpp
 #if ! ( BOOST_WORKAROUND(BOOST_MSVC, == 1310) )
-    BOOST_PROGRAM_OPTIONS_DECL void validate(boost::any& v,
+    BOOST_PROGRAM_OPTIONS_DECL void validate(std::any& v,
                        const std::vector<std::string>& xs,
                        std::string*,
                        int);
 
 #if !defined(BOOST_NO_STD_WSTRING)
-    BOOST_PROGRAM_OPTIONS_DECL void validate(boost::any& v,
+    BOOST_PROGRAM_OPTIONS_DECL void validate(std::any& v,
                        const std::vector<std::wstring>& xs,
                        std::string*,
                        int);
@@ -127,15 +127,15 @@ namespace boost { namespace program_options {
     /** Validates sequences. Allows multiple values per option occurrence
        and multiple occurrences. */
     template<class T, class charT>
-    void validate(boost::any& v,
+    void validate(std::any& v,
                   const std::vector<std::basic_string<charT> >& s,
                   std::vector<T>*,
                   int)
     {
-        if (v.empty()) {
-            v = boost::any(std::vector<T>());
+        if (!v.has_value()) {
+            v = std::any(std::vector<T>());
         }
-        std::vector<T>* tv = boost::any_cast< std::vector<T> >(&v);
+        std::vector<T>* tv = std::any_cast< std::vector<T> >(&v);
         assert(NULL != tv);
         for (unsigned i = 0; i < s.size(); ++i)
         {
@@ -143,11 +143,11 @@ namespace boost { namespace program_options {
                 /* We call validate so that if user provided
                    a validator for class T, we use it even
                    when parsing vector<T>.  */
-                boost::any a;
+                std::any a;
                 std::vector<std::basic_string<charT> > cv;
                 cv.push_back(s[i]);
                 validate(a, cv, (T*)0, 0);
-                tv->push_back(boost::any_cast<T>(a));
+                tv->push_back(std::any_cast<T>(a));
             }
             catch(const bad_lexical_cast& /*e*/) {
                 boost::throw_exception(invalid_option_value(s[i]));
@@ -157,28 +157,28 @@ namespace boost { namespace program_options {
 
     /** Validates optional arguments. */
     template<class T, class charT>
-    void validate(boost::any& v,
+    void validate(std::any& v,
                   const std::vector<std::basic_string<charT> >& s,
                   boost::optional<T>*,
                   int)
     {
         validators::check_first_occurrence(v);
         validators::get_single_string(s);
-        boost::any a;
+        std::any a;
         validate(a, s, (T*)0, 0);
-        v = boost::any(boost::optional<T>(boost::any_cast<T>(a)));
+        v = std::any(boost::optional<T>(std::any_cast<T>(a)));
     }
 
     template<class T, class charT>
     void
     typed_value<T, charT>::
-    xparse(boost::any& value_store,
+    xparse(std::any& value_store,
            const std::vector<std::basic_string<charT> >& new_tokens) const
     {
         // If no tokens were given, and the option accepts an implicit
         // value, then assign the implicit value as the stored value;
         // otherwise, validate the user-provided token(s).
-        if (new_tokens.empty() && !m_implicit_value.empty())
+        if (new_tokens.empty() && m_implicit_value.has_value())
             value_store = m_implicit_value;
         else
             validate(value_store, new_tokens, (T*)0, 0);

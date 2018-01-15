@@ -13,7 +13,6 @@
 #include <boost/program_options/value_semantic.hpp>
 
 #include <boost/detail/workaround.hpp>
-#include <boost/any.hpp>
 
 #include <string>
 #include <vector>

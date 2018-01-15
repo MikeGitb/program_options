@@ -120,7 +120,7 @@ namespace boost { namespace program_options {
             }
             if (m.count(key) == 0) {
 
-                boost::any def;
+                std::any def;
                 if (d.semantic()->apply_default(def)) {
                     m[key] = variable_value(def, true);
                     m[key].m_value_semantic = d.semantic();
