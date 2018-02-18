@@ -52,14 +52,14 @@ void test_each_exception_message(const string& test_description, const vector<co
     if (exception_msg.length() == 0)
         return;
     variables_map vm;
-    unsigned argc = argv.size();
+    std::size_t argc = argv.size();
 
 
     try {
         if (style == -1)
             store(parse_config_file(is, desc), vm);
         else
-            store(parse_command_line(argv.size(), &argv[0], desc, style), vm);
+            store(parse_command_line(static_cast<int>( argv.size() ), &argv[0], desc, style), vm);
         notify(vm);
     }
     catch (EXCEPTION& e)

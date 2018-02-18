@@ -49,7 +49,7 @@ void required_throw_test()
          store(command_line_parser(tokens).options(opts).run(), vm);
          notify(vm);
       }
-      catch (required_option& e) {
+      catch (required_option&) {
          throwed = true;
       }
       BOOST_CHECK(!throwed);
@@ -79,7 +79,7 @@ void simple_required_test(const char* config_file)
          store(parse_config_file<char>(config_file, opts), vm);
          notify(vm);
       }
-      catch (required_option& e) {
+      catch (required_option&) {
          throwed = true;
       }
       BOOST_CHECK(!throwed);
