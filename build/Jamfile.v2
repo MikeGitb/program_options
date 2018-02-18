@@ -13,4 +13,5 @@ boost-lib program_options
     : $(SOURCES).cpp
     : # See https://svn.boost.org/trac/boost/ticket/5049
       <target-os>hpux,<toolset>gcc:<define>_INCLUDE_STDC__SOURCE_199901
+	  <toolset>msvc <cxxflags>\/std\:c++latest
     ;

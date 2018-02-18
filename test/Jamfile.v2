@@ -13,9 +13,11 @@ project
 rule po-test ( source : input-file ? )
 {
     return
-        [ run $(source) : : $(input-file) ]
+        [ run $(source) : : $(input-file)
+		  : <toolset>msvc <cxxflags>\/std\:c++latest ]
         [ run $(source) : : $(input-file) 
           : <link>shared <define>BOOST_PROGRAM_OPTIONS_DYN_LINK=1
+		  <toolset>msvc <cxxflags>\/std\:c++latest
           : $(source:B)_dll ] 
     ;   
 }    
@@ -35,10 +37,10 @@ test-suite program_options :
     [ po-test required_test.cpp : required_test.cfg ]
     [ po-test exception_txt_test.cpp ]
     [ po-test optional_test.cpp ]
-    [ run options_description_test.cpp : : : <rtti>off <define>BOOST_NO_RTTI <define>BOOST_NO_TYPEID : options_description_no_rtti_test ]
+    [ run options_description_test.cpp : : : <rtti>off <define>BOOST_NO_RTTI <define>BOOST_NO_TYPEID <toolset>msvc <cxxflags>\/std\:c++latest : options_description_no_rtti_test  ]
     ;
         
 exe test_convert : test_convert.cpp ;   
 
 # `quick` target (for CI)
-run quick.cpp : --path=initial ;
+run quick.cpp : --path=initial : : <toolset>msvc <cxxflags>\/std\:c++latest ;
