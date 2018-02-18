@@ -10,6 +10,7 @@
 #include <string>
 #include <locale>
 #include <stdexcept>
+#include <functional>
 
 #include <boost/config.hpp>
 
@@ -18,8 +19,6 @@
 #include <boost/program_options/detail/convert.hpp>
 #include <boost/program_options/detail/utf8_codecvt_facet.hpp>
 #include <boost/throw_exception.hpp>
-
-#include <boost/bind.hpp>
 
 using namespace std;
 
@@ -31,7 +30,7 @@ namespace boost { namespace detail {
        calls the 'out' method, and that syntax difference makes straightforward
        template implementation impossible.
 
-       This functions takes a 'fun' argument, which should have the same 
+       This functions takes a 'fun' argument, which should have the same
        parameters and return type and the in/out methods. The actual converting
        function will pass functional objects created with boost::bind.
        Experiments show that the performance loss is less than 10%.
@@ -39,10 +38,10 @@ namespace boost { namespace detail {
     template<class ToChar, class FromChar, class Fun>
     std::basic_string<ToChar>
     convert(const std::basic_string<FromChar>& s, Fun fun)
-        
+
     {
         std::basic_string<ToChar> result;
-        
+
         std::mbstate_t state = std::mbstate_t();
 
         const FromChar* from = s.data();
@@ -51,17 +50,17 @@ namespace boost { namespace detail {
         // not possible the tell the required output size without the conversion.
         // All we can is convert data by pieces.
         while(from != from_end) {
-            
+
             // std::basic_string does not provide non-const pointers to the data,
             // so converting directly into string is not possible.
             ToChar buffer[32];
-            
+
             ToChar* to_next = buffer;
             // Need variable because boost::bind doesn't work with rvalues.
             ToChar* to_end = buffer + 32;
-            std::codecvt_base::result r = 
+            std::codecvt_base::result r =
                 fun(state, from, from_end, from, buffer, to_end, to_next);
-            
+
             if (r == std::codecvt_base::error)
                 boost::throw_exception(
                     std::logic_error("character conversion failed"));
@@ -73,36 +72,37 @@ namespace boost { namespace detail {
             if (to_next == buffer)
                 boost::throw_exception(
                     std::logic_error("character conversion failed"));
-            
+
             // Add converted characters
             result.append(buffer, to_next);
         }
-        
-        return result;        
-    }           
+
+        return result;
+    }
 }}
 
 namespace boost {
+	using namespace std::placeholders;
 
 #ifndef BOOST_NO_STD_WSTRING
-    BOOST_PROGRAM_OPTIONS_DECL std::wstring 
-    from_8_bit(const std::string& s, 
+    BOOST_PROGRAM_OPTIONS_DECL std::wstring
+    from_8_bit(const std::string& s,
                const std::codecvt<wchar_t, char, std::mbstate_t>& cvt)
     {
         return detail::convert<wchar_t>(
-            s,                 
-            boost::bind(&std::codecvt<wchar_t, char, mbstate_t>::in,
+            s,
+            std::bind(&std::codecvt<wchar_t, char, mbstate_t>::in,
                         &cvt,
                         _1, _2, _3, _4, _5, _6, _7));
     }
 
-    BOOST_PROGRAM_OPTIONS_DECL std::string 
-    to_8_bit(const std::wstring& s, 
+    BOOST_PROGRAM_OPTIONS_DECL std::string
+    to_8_bit(const std::wstring& s,
              const std::codecvt<wchar_t, char, std::mbstate_t>& cvt)
     {
         return detail::convert<char>(
-            s,                 
-            boost::bind(&codecvt<wchar_t, char, mbstate_t>::out,
+            s,
+            std::bind(&codecvt<wchar_t, char, mbstate_t>::out,
                         &cvt,
                         _1, _2, _3, _4, _5, _6, _7));
     }
@@ -112,13 +112,13 @@ namespace boost {
         boost::program_options::detail::utf8_codecvt_facet
             utf8_facet;
     }
-    
+
     BOOST_PROGRAM_OPTIONS_DECL std::wstring
     from_utf8(const std::string& s)
     {
         return from_8_bit(s, utf8_facet);
     }
-    
+
     BOOST_PROGRAM_OPTIONS_DECL std::string
     to_utf8(const std::wstring& s)
     {
@@ -129,7 +129,7 @@ namespace boost {
     from_local_8_bit(const std::string& s)
     {
         typedef codecvt<wchar_t, char, mbstate_t> facet_type;
-        return from_8_bit(s, 
+        return from_8_bit(s,
                           BOOST_USE_FACET(facet_type, locale()));
     }
 
@@ -137,8 +137,8 @@ namespace boost {
     to_local_8_bit(const std::wstring& s)
     {
         typedef codecvt<wchar_t, char, mbstate_t> facet_type;
-        return to_8_bit(s, 
-                        BOOST_USE_FACET(facet_type, locale()));                        
+        return to_8_bit(s,
+                        BOOST_USE_FACET(facet_type, locale()));
     }
 #endif
 

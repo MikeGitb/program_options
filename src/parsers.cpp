@@ -16,11 +16,11 @@
 #include <boost/program_options/environment_iterator.hpp>
 #include <boost/program_options/detail/convert.hpp>
 
-#include <boost/bind.hpp>
 #include <boost/throw_exception.hpp>
 
 #include <cctype>
 #include <fstream>
+#include <functional>
 
 #if !defined(__GNUC__) || __GNUC__ < 3
 #include <iostream>
@@ -68,6 +68,7 @@ namespace boost { namespace program_options {
     namespace {
         woption woption_from_option(const option& opt)
         {
+			using namespace std::placeholders;
             woption result;
             result.string_key = opt.string_key;
             result.position_key = opt.position_key;
@@ -75,12 +76,12 @@ namespace boost { namespace program_options {
 
             std::transform(opt.value.begin(), opt.value.end(),
                            back_inserter(result.value),
-                           boost::bind(from_utf8, _1));
+                           std::bind(from_utf8, _1));
 
             std::transform(opt.original_tokens.begin(),
                            opt.original_tokens.end(),
                            back_inserter(result.original_tokens),
-                           boost::bind(from_utf8, _1));
+                           std::bind(from_utf8, _1));
             return result;
         }
     }
