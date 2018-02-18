@@ -6,8 +6,6 @@
 #ifndef BOOST_EOF_ITERATOR_VP_2004_03_12
 #define BOOST_EOF_ITERATOR_VP_2004_03_12
 
-#include <boost/iterator/iterator_facade.hpp>
-
 namespace boost {
 
     /** The 'eof_iterator' class is useful for constructing forward iterators
@@ -42,14 +40,40 @@ namespace boost {
         implicitly moves data pointer, like for stream operation.
     */
     template<class Derived, class ValueType>
-    class eof_iterator : public iterator_facade<Derived, const ValueType,
-                                                forward_traversal_tag>
+    class eof_iterator //: public my_detail::iterator_facade<Derived, const ValueType, boost::iterators::forward_traversal_tag>
     {
     public:
+		using value_type = ValueType;
+		using difference_type = std::ptrdiff_t;
+		using pointer = value_type *;
+		using reference = value_type&;
+
+		using iterator_category = std::forward_iterator_tag;
+
         eof_iterator()
         : m_at_eof(false)
         {}
 
+		friend bool operator==(const eof_iterator<Derived, ValueType>& l, const eof_iterator<Derived, ValueType>& r)
+		{
+			return l.equal(r);
+		}
+
+		friend bool operator!=(const eof_iterator<Derived, ValueType>& l, const eof_iterator<Derived, ValueType>& r)
+		{
+			return !l.equal(r);
+		}
+
+		const ValueType& operator*() const {
+			return m_value;
+		}
+		const ValueType* operator->() const {
+			return &m_value;
+		}
+		Derived& operator++() {
+			increment();
+			return static_cast<Derived&>(*this);
+		}
     protected: // interface for derived
 
         /** Returns the reference which should be used by derived
@@ -66,13 +90,7 @@ namespace boost {
             m_at_eof = true;
         }
 
-
     private: // iterator core operations
-#ifdef __DCC__ 
-        friend class boost::iterator_core_access; 
-#else 
-        friend class iterator_core_access; 	 
-#endif
 
         void increment()
         {
@@ -85,11 +103,6 @@ namespace boost {
                 return true;
             else
                 return false;
-        }
-
-        const ValueType& dereference() const
-        {
-            return m_value;
         }
 
         bool m_at_eof;
