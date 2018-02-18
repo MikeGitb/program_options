@@ -12,7 +12,6 @@
 #include <set>
 #include <memory>
 
-#include <boost/noncopyable.hpp>
 #include <boost/program_options/config.hpp>
 #include <boost/program_options/option.hpp>
 #include <boost/program_options/eof_iterator.hpp>
